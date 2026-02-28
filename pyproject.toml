@@ -18,3 +18,28 @@ dependencies = [
     "redis>=7.2.0",
     "whitenoise>=6.11.0",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest-cov>=7.0.0",
+    "pytest-django>=4.12.0",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "root.settings"
+pythonpath = ["."]
+addopts = "--tb=short --cov=. --cov-report=term-missing --cov-config=pyproject.toml"
+
+[tool.coverage.run]
+omit = [
+    "*/migrations/*",
+    "manage.py",
+    "root/wsgi.py",
+    "root/asgi.py",
+]
+
+[tool.coverage.report]
+fail_under = 100
+exclude_lines = [
+    "pragma: no cover",
+]
