@@ -49,7 +49,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Third-party apps
+    "channels",
     "health_check",
+    "rest_framework",
+    # Project apps
+    "calls",
+    "trunks",
+    "streams",
 ]
 
 MIDDLEWARE = [
@@ -140,6 +146,29 @@ STORAGES = {
 
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+# Django REST Framework
+# https://www.django-rest-framework.org/
+
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 50,
+}
+
+# Django Channels
+# https://channels.readthedocs.io/
+
+_redis_url = env("REDIS_URL", default="")
+CHANNEL_LAYERS = (
+    {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {"hosts": [_redis_url]},
+        }
+    }
+    if _redis_url
+    else {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+)
 
 # Logging
 # https://docs.djangoproject.com/en/6.0/topics/logging/
