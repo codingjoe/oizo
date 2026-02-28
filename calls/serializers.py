@@ -14,7 +14,6 @@ class CallSerializer(serializers.ModelSerializer):
             "direction",
             "from_number",
             "to_number",
-            "url",
             "status_callback",
             "start_time",
             "end_time",
@@ -36,4 +35,4 @@ class CallSerializer(serializers.ModelSerializer):
 class CallCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Call
-        fields = ["from_number", "to_number", "url", "status_callback"]
+        fields = ["from_number", "to_number", "status_callback"]
