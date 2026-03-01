@@ -49,7 +49,18 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Third-party apps
+    "channels",
+    "drf_spectacular",
+    "drf_spectacular_sidecar",
     "health_check",
+    "rest_framework",
+    # Project apps
+    "auth_tokens",
+    "billing",
+    "calls",
+    "phone_numbers",
+    "streams",
+    "webhooks",
 ]
 
 MIDDLEWARE = [
@@ -140,6 +151,62 @@ STORAGES = {
 
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+# Django REST Framework
+# https://www.django-rest-framework.org/
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "auth_tokens.authentication.APIKeyAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 50,
+}
+
+# drf-spectacular OpenAPI schema settings
+# https://drf-spectacular.readthedocs.io/
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Oizo Voice API",
+    "DESCRIPTION": (
+        "B2B Voice CPaaS — provision numbers, initiate and receive calls, "
+        "and subscribe to real-time call events via webhooks."
+    ),
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SWAGGER_UI_DIST": "SIDECAR",
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    "REDOC_DIST": "SIDECAR",
+    "CONTACT": {"name": "Oizo Support"},
+    "LICENSE": {"name": "BSD 2-Clause"},
+}
+
+# Sipgate SIP trunk configuration
+# https://developer.sipgate.io/
+
+SIPGATE_TOKEN_ID = env("SIPGATE_TOKEN_ID", default="")
+SIPGATE_TOKEN = env("SIPGATE_TOKEN", default="")
+SIPGATE_SIP_HOST = env("SIPGATE_SIP_HOST", default="sipgate.de")
+SIPGATE_SIP_PORT = env.int("SIPGATE_SIP_PORT", default=5060)
+SIPGATE_SIP_USER = env("SIPGATE_SIP_USER", default="")
+SIPGATE_SIP_PASSWORD = env("SIPGATE_SIP_PASSWORD", default="")
+
+# Django Channels
+# https://channels.readthedocs.io/
+
+_redis_url = env("REDIS_URL", default="")
+CHANNEL_LAYERS = (
+    {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {"hosts": [_redis_url]},
+        }
+    }
+    if _redis_url
+    else {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+)
 
 # Logging
 # https://docs.djangoproject.com/en/6.0/topics/logging/
