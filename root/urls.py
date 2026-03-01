@@ -17,10 +17,19 @@ urlpatterns = [
     # Admin
     path("admin/", admin.site.urls),
     # Health check
-    path("health/", HealthCheckView.as_view(), name="health"),
-    # API v1
-    path("v1/", include("calls.urls")),
-    path("v1/", include("phone_numbers.urls")),
-    path("v1/", include("webhooks.urls")),
-    path("v1/", include("billing.urls")),
+    path("health/", HealthCheckView.as_view(
+        checks=[
+                "health_check.contrib.psutil.Disk",
+                "health_check.contrib.psutil.Memory",
+        ]
+    ), name="health"),
+    path("api/", include([
+        path("v1/", include([
+            path("", include("calls.urls")),
+            path("", include("phone_numbers.urls")),
+            path("", include("webhooks.urls")),
+            path("", include("billing.urls")),
+
+        ])),
+    ])),
 ]
